@@ -1,5 +1,6 @@
 /* Author: */
-var Get_API_URL = "https://freetestapi.com/api/v1/movies?sort=name&order=dec";
+var Get_API_URL = "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=3fd2be6f0c70a2a598f084ddfb75487c&page=1";
+var IMG_PATH = 'https://image.tmdb.org/t/p/w1280'
 
 var main = document.querySelector("#main");
 var form = document.querySelector("form");
@@ -15,7 +16,7 @@ async function getMovies(url) {
   console.log("result:", res);
   var data = await res.json();
   console.log("data:", data);
-  showMovies(data);
+  showMovies(data.results);
 }
 
 // showMovies function to display data
@@ -23,19 +24,19 @@ function showMovies(movies) {
   main.innerHTML = "";
 
   movies.forEach((movie) => {
-    var { title, poster, rating, plot } = movie;
+    var { title, poster_path, vote_average, overview } = movie;
     var movieEl = document.createElement("div");
     movieEl.classList.add("movie");
 
     movieEl.innerHTML = `
-            <img src="${poster}" alt="${title}">
+            <img src="${IMG_PATH + poster_path}" alt="${title}">
             <div class="movie-info">
           <h3>${title}</h3>
-          <span class="${getClassByRate(rating)}">${rating}</span>
+          <span class="${getClassByRate(vote_average)}">${vote_average}</span>
             </div>
             <div class="overview">
           <h3>Overview</h3>
-          ${plot}
+          ${overview}
         </div>
         `;
 
@@ -59,9 +60,10 @@ form.addEventListener("submit", (e) => {
   e.preventDefault();
   var searchTerm = search.value.toLowerCase();
   console.log(searchTerm);
-  var API_URL = `https://freetestapi.com/api/v1/movies?search=${searchTerm}`;
+  var SEARCH_API = `https://api.themoviedb.org/3/search/movie?api_key=3fd2be6f0c70a2a598f084ddfb75487c&query=${searchTerm}"`
+  //var API_URL = `https://freetestapi.com/api/v1/movies?search=${searchTerm}`;
   if (searchTerm && searchTerm !== "") {
-    getMovies(API_URL);
+    getMovies(SEARCH_API);
     search.value = "";
   } else {
     window.location.reload();
